@@ -3,4 +3,4 @@
  *
  * @author kitsune
  */
-package com.mamezou.lentil.swing;
+package com.mamezou.lentil.swing ;

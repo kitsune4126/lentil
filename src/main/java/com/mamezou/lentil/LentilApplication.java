@@ -1,9 +1,10 @@
 package com.mamezou.lentil ;
 
-import javax.swing.JFrame ;
 import org.springframework.boot.autoconfigure.SpringBootApplication ;
 import org.springframework.boot.builder.SpringApplicationBuilder ;
 import org.springframework.context.ConfigurableApplicationContext ;
+
+import com.mamezou.lentil.swing.MainWindow ;
 
 /**
  * Lentil ( スタンドアロン、GUI 版 ) のメイン・アプリケーション・クラス。
@@ -33,11 +34,8 @@ public class LentilApplication {
      * @param args コマンド・ラインで指定されたパラメータ文字列の配列。
      * @throws Exception アプリケーションの初期化やウインドウ・オープン時に何らかの例外が発生した場合。
      */
-    public void run( String ... args ) throws Exception {
-        final JFrame frame = new JFrame( "Lentil Main Window" ) ;
-        frame.setSize( 640 , 480 ) ;
-        frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE ) ;
-        frame.setVisible( true ) ;
+    private void run( String ... args ) throws Exception {
+        MainWindow.open( args ) ;
     }
 
 }
