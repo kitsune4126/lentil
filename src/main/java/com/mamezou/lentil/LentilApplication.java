@@ -3,7 +3,11 @@ package com.mamezou.lentil ;
 import org.springframework.boot.autoconfigure.SpringBootApplication ;
 import org.springframework.boot.builder.SpringApplicationBuilder ;
 import org.springframework.context.ConfigurableApplicationContext ;
+import org.springframework.context.annotation.Bean ;
 
+import com.mamezou.lentil.repository.ModelRepositoryContainer ;
+import com.mamezou.lentil.swing.DefaultElementPropertyViewFactory ;
+import com.mamezou.lentil.swing.ElementPropertyViewFactory ;
 import com.mamezou.lentil.swing.MainWindow ;
 
 /**
@@ -14,16 +18,20 @@ import com.mamezou.lentil.swing.MainWindow ;
 @SpringBootApplication
 public class LentilApplication {
 
+    // @Category application invocation
+
     /**
      * Lentil ( スタンドアロン、GUI 版 ) のメイン・メソッド。
      *
      * @param args コマンド・ラインで指定されたパラメータ文字列の配列。
      */
     public static void main( final String ... args ) {
-        try ( final ConfigurableApplicationContext context = new SpringApplicationBuilder( LentilApplication.class ).headless( false ).run( args ) ) {
+        final ConfigurableApplicationContext context = new SpringApplicationBuilder( LentilApplication.class ).headless( false ).run( args ) ;
+        try {
             LentilApplication application = context.getBean( LentilApplication.class ) ;
-            application.run( args ) ;
+            application.run( context , args ) ;
         } catch ( Exception e ) {
+            context.close() ;
             e.printStackTrace() ;
         }
     }
@@ -34,8 +42,20 @@ public class LentilApplication {
      * @param args コマンド・ラインで指定されたパラメータ文字列の配列。
      * @throws Exception アプリケーションの初期化やウインドウ・オープン時に何らかの例外が発生した場合。
      */
-    private void run( String ... args ) throws Exception {
-        MainWindow.open( args ) ;
+    private void run( final ConfigurableApplicationContext context , final String ... args ) throws Exception {
+        MainWindow.open( context , args ) ;
+    }
+
+    // @Category bean definitions
+
+    @Bean
+    public ElementPropertyViewFactory elementPropertyViewFactory() {
+        return new DefaultElementPropertyViewFactory() ;
+    }
+
+    @Bean
+    public ModelRepositoryContainer modelRepositoryContainer() {
+        return new ModelRepositoryContainer() ;
     }
 
 }
