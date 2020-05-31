@@ -5,7 +5,7 @@ package com.mamezou.lentil.model ;
  *
  * @author kitsune
  */
-public interface ModelElementObserver {
+public interface ElementObserver {
 
     // @Category event handling
 
@@ -14,6 +14,6 @@ public interface ModelElementObserver {
      *
      * @param event 変更の内容を示す変更通知。
      */
-    public void modelElementChanged( final ModelElementChangedEvent event ) ;
+    public void elementChanged( final ElementChangedEvent event ) ;
 
 }

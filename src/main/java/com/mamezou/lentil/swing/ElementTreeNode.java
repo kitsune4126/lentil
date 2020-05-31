@@ -3,15 +3,16 @@ package com.mamezou.lentil.swing ;
 import javax.swing.tree.DefaultMutableTreeNode ;
 import javax.swing.tree.DefaultTreeModel ;
 
-import com.mamezou.lentil.model.ModelElementChangedEvent ;
-import com.mamezou.lentil.model.ModelElementObserver ;
+import com.mamezou.lentil.model.Element ;
+import com.mamezou.lentil.model.ElementChangedEvent ;
+import com.mamezou.lentil.model.ElementObserver ;
 
 /**
  * ツリー・ビューの項目としてモデル要素を表示/編集するためのノード。
  *
  * @author kitsune
  */
-public class ElementTreeNode extends DefaultMutableTreeNode implements ModelElementObserver {
+public class ElementTreeNode extends DefaultMutableTreeNode implements ElementObserver {
 
     // @Category instance variables
 
@@ -28,7 +29,7 @@ public class ElementTreeNode extends DefaultMutableTreeNode implements ModelElem
      * @param element 新しく作成されるノードが表わすモデル要素。
      * @throws IllegalArgumentException {@code element} として {@code null} が渡された場合。
      */
-    public ElementTreeNode( final BrowsableElement element , final DefaultTreeModel treeModel ) throws IllegalArgumentException {
+    public ElementTreeNode( final Element element , final DefaultTreeModel treeModel ) throws IllegalArgumentException {
         super( element , true ) ;
         if ( null == element ) {
             throw new IllegalArgumentException( "element should not be null." ) ;
@@ -55,18 +56,16 @@ public class ElementTreeNode extends DefaultMutableTreeNode implements ModelElem
      *
      * @return レシーバが表わすモデル要素。
      */
-    public BrowsableElement getElement() {
-        return (BrowsableElement)( this.getUserObject() ) ;
+    public Element getElement() {
+        return (Element)( this.getUserObject() ) ;
     }
 
     // @Category event handling
 
     @Override
-    public void modelElementChanged( ModelElementChangedEvent event ) {
+    public void elementChanged( ElementChangedEvent event ) {
         if ( this.getElement().equals( event.getSender() ) && ( null != this.treeModel ) ) {
-            if ( BrowsableElement.CHANGE_ASPECT_NAME.equals( event.getAspect() ) ) {
-                this.treeModel.nodeChanged( this ) ;
-            }
+            // FIXME 未実装
         }
     }
 

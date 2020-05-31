@@ -5,7 +5,7 @@ package com.mamezou.lentil.model ;
  *
  * @author kitsune
  */
-public class ModelElementChangedEvent {
+public class ElementChangedEvent {
 
     // @Category instance variables
 
@@ -18,7 +18,7 @@ public class ModelElementChangedEvent {
      * この変更通知を発行する原因となった他の変更通知。
      * この変更通知が他の変更通知によらず発行されたものであれば {@code null} が設定される。
      */
-    private final ModelElementChangedEvent cause ;
+    private final ElementChangedEvent cause ;
 
     /**
      * この変更通知に付加されたパラメータの配列。
@@ -29,7 +29,7 @@ public class ModelElementChangedEvent {
     /**
      * この変更通知を直接発行したモデル要素。
      */
-    private final ModelElement sender ;
+    private final Element sender ;
 
     // @Category instance creation
 
@@ -40,7 +40,7 @@ public class ModelElementChangedEvent {
      * @param aspect 変更通知の種類を示す文字列。
      * @throws IllegalArgumentException {@code sender} か {@code aspect} として {@code null} が渡された場合。
      */
-    public ModelElementChangedEvent( final ModelElement sender , final String aspect ) throws IllegalArgumentException {
+    public ElementChangedEvent( final Element sender , final String aspect ) throws IllegalArgumentException {
         this( sender , aspect , null , null ) ;
     }
 
@@ -52,7 +52,7 @@ public class ModelElementChangedEvent {
      * @param cause 変更通知を発行する原因となった他の変更通知。他の変更通知によらない場合は {@code null} を指定する。
      * @throws IllegalArgumentException {@code sender} か {@code aspect} として {@code null} が渡された場合。
      */
-    public ModelElementChangedEvent( final ModelElement sender , final String aspect , final ModelElementChangedEvent cause ) throws IllegalArgumentException {
+    public ElementChangedEvent( final Element sender , final String aspect , final ElementChangedEvent cause ) throws IllegalArgumentException {
         this( sender , aspect , cause , null ) ;
     }
 
@@ -64,7 +64,7 @@ public class ModelElementChangedEvent {
      * @param parameters 変更通知に付加されたパラメータの配列。
      * @throws IllegalArgumentException {@code sender} か {@code aspect} として {@code null} が渡された場合。
      */
-    public ModelElementChangedEvent( final ModelElement sender , final String aspect , final Object[] parameters ) throws IllegalArgumentException {
+    public ElementChangedEvent( final Element sender , final String aspect , final Object[] parameters ) throws IllegalArgumentException {
         this( sender , aspect , null , parameters ) ;
     }
 
@@ -77,7 +77,7 @@ public class ModelElementChangedEvent {
      * @param parameters 変更通知に付加されたパラメータの配列。
      * @throws IllegalArgumentException {@code sender} か {@code aspect} として {@code null} が渡された場合。
      */
-    public ModelElementChangedEvent( final ModelElement sender , final String aspect , final ModelElementChangedEvent cause , final Object[] parameters ) throws IllegalArgumentException {
+    public ElementChangedEvent( final Element sender , final String aspect , final ElementChangedEvent cause , final Object[] parameters ) throws IllegalArgumentException {
         if ( ( null == sender ) || ( null == aspect ) ) {
             throw new IllegalArgumentException( "sender and aspect should not be null." ) ;
         }
@@ -103,7 +103,7 @@ public class ModelElementChangedEvent {
      *
      * @return cause この変更通知を発行する原因となった他の変更通知。この変更通知が他の変更通知によらず発行されたものであれば {@code null} が返される。
      */
-    public ModelElementChangedEvent getCause() {
+    public ElementChangedEvent getCause() {
         return this.cause ;
     }
 
@@ -122,7 +122,7 @@ public class ModelElementChangedEvent {
      *
      * @return sender この変更通知を直接発行したモデル要素。
      */
-    public ModelElement getSender() {
+    public Element getSender() {
         return this.sender ;
     }
 
@@ -135,7 +135,7 @@ public class ModelElementChangedEvent {
      * @return レシーバのセンダ・リストに含まれているか否か。含まれている場合は {@code true}、そうでなければ {@code false}。
      * @throws IllegalArgumentException {@code element} として {@code null} が渡された場合。
      */
-    public boolean sendersIncludes( final ModelElement element ) throws IllegalArgumentException {
+    public boolean sendersIncludes( final Element element ) throws IllegalArgumentException {
         if ( null == element ) {
             throw new IllegalArgumentException( "element should not be null." ) ;
         }

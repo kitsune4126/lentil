@@ -3,11 +3,7 @@ package com.mamezou.lentil ;
 import org.springframework.boot.autoconfigure.SpringBootApplication ;
 import org.springframework.boot.builder.SpringApplicationBuilder ;
 import org.springframework.context.ConfigurableApplicationContext ;
-import org.springframework.context.annotation.Bean ;
 
-import com.mamezou.lentil.repository.ModelRepositoryContainer ;
-import com.mamezou.lentil.swing.DefaultElementPropertyViewFactory ;
-import com.mamezou.lentil.swing.ElementPropertyViewFactory ;
 import com.mamezou.lentil.swing.MainWindow ;
 
 /**
@@ -44,18 +40,6 @@ public class LentilApplication {
      */
     private void run( final ConfigurableApplicationContext context , final String ... args ) throws Exception {
         MainWindow.open( context , args ) ;
-    }
-
-    // @Category bean definitions
-
-    @Bean
-    public ElementPropertyViewFactory elementPropertyViewFactory() {
-        return new DefaultElementPropertyViewFactory() ;
-    }
-
-    @Bean
-    public ModelRepositoryContainer modelRepositoryContainer() {
-        return new ModelRepositoryContainer() ;
     }
 
 }

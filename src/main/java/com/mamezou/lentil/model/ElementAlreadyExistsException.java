@@ -1,11 +1,11 @@
-package com.mamezou.lentil.repository ;
+package com.mamezou.lentil.model ;
 
 /**
  * リポジトリにすでに登録されているキーの値を変更しようとした場合に投げられる例外。
  *
  * @author kitsune
  */
-public class ElementAlreadyExistsException extends Exception {
+public class ElementAlreadyExistsException extends RuntimeException {
 
     // @Category instance creation
 

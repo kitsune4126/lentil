@@ -8,9 +8,7 @@ import java.awt.event.ActionEvent ;
 import java.awt.event.KeyEvent ;
 import java.awt.event.WindowEvent ;
 import java.io.File ;
-import java.util.HashMap ;
 import java.util.Locale ;
-import java.util.Map ;
 
 import javax.swing.AbstractAction ;
 import javax.swing.Action ;
@@ -30,11 +28,10 @@ import javax.swing.event.TreeSelectionEvent ;
 import javax.swing.event.TreeSelectionListener ;
 import javax.swing.event.TreeWillExpandListener ;
 import javax.swing.tree.ExpandVetoException ;
-import javax.swing.tree.TreePath ;
 
 import org.springframework.context.ConfigurableApplicationContext ;
 
-import com.mamezou.lentil.repository.FileBasedModelRepository ;
+import com.mamezou.lentil.model.FileBasedModelRepository ;
 
 /**
  * Swing ベース GUI のメイン・ウインドウ。
@@ -103,17 +100,6 @@ public class MainWindow extends JFrame {
     private JPanel primaryPropertyPanel ;
 
     /**
-     * 現在表示されている(アクティブな)主プロパティ・ビュー。
-     * アクティブな主プロパティ・ビューが無い場合は {@code null} がセットされる。
-     */
-    private ElementPropertyView primaryPropertyView = null ;
-
-    /**
-     * レシーバに組み込まれている主プロパティ・ビューのマップ。
-     */
-    private Map< String , ElementPropertyView > primaryPropertyViewMap = new HashMap< String , ElementPropertyView >() ;
-
-    /**
      * リポジトリのオープンや新規作成の際に使われるファイル・ダイアログ。
      */
     private JFileChooser repositoryDirectoryChooser ;
@@ -122,17 +108,6 @@ public class MainWindow extends JFrame {
      * モデル要素のプロパティ表示/編集に使われる右側のパネル。
      */
     private JPanel secondaryPropertyPanel ;
-
-    /**
-     * 現在表示されている(アクティブな)副プロパティ・ビュー。
-     * アクティブな副プロパティ・ビューが無い場合は {@code null} がセットされる。
-     */
-    private ElementPropertyView secondaryPropertyView = null ;
-
-    /**
-     * レシーバに組み込まれている副プロパティ・ビューのマップ。
-     */
-    private Map< String , ElementPropertyView > secondaryPropertyViewMap = new HashMap< String , ElementPropertyView >() ;
 
     /**
      * ウインドウ最下部のステータス・ペインに表示されるラベル。
@@ -412,7 +387,7 @@ public class MainWindow extends JFrame {
         if ( JFileChooser.APPROVE_OPTION == this.repositoryDirectoryChooser.showOpenDialog( this ) ) {
             final File selectedFile = this.repositoryDirectoryChooser.getSelectedFile() ;
             if ( ( null != selectedFile ) && ( selectedFile.canWrite() ) ) {
-                this.explorerView.addRepository( new FileBasedModelRepository( selectedFile.toPath() ) ) ;
+                this.explorerView.addRepository( new FileBasedModelRepository( selectedFile.toPath() , null ) ) ;
             }
         }
     }
@@ -443,72 +418,7 @@ public class MainWindow extends JFrame {
      * @param event 項目が選択/選択解除された時のイベント。
      */
     private void handleTreeSelectionChanged( final TreeSelectionEvent event ) {
-        final TreePath[] selectionPaths = this.explorerView.getSelectionPaths() ;
-        if ( ( null == selectionPaths ) || ( 1 != selectionPaths.length ) || ( ( (ElementTreeNode)( selectionPaths[ 0 ].getLastPathComponent() ) ).isRoot() ) ) {
-            if ( null != this.primaryPropertyView ) {
-                this.primaryPropertyView.setModelElement( null ) ;
-                ( (CardLayout)( this.primaryPropertyPanel.getLayout() ) ).show( this.primaryPropertyPanel , PROPERTY_VIEW_NAME_NONE ) ;
-                this.primaryPropertyView = null ;
-            }
-            if ( null != this.secondaryPropertyView ) {
-                this.secondaryPropertyView.setModelElement( null ) ;
-                ( (CardLayout)( this.secondaryPropertyPanel.getLayout() ) ).show( this.secondaryPropertyPanel , PROPERTY_VIEW_NAME_NONE ) ;
-                this.secondaryPropertyView = null ;
-            }
-        } else {
-            final ElementTreeNode selectedNode = (ElementTreeNode)( selectionPaths[ 0 ].getLastPathComponent() ) ;
-            final String propertyViewName = selectedNode.getElement().getTypeName() ;
-            if ( this.primaryPropertyViewMap.containsKey( propertyViewName ) ) {
-                if ( this.primaryPropertyView == this.primaryPropertyViewMap.get( propertyViewName ) ) {
-                    this.primaryPropertyView.setModelElement( selectedNode.getElement() ) ;
-                    if ( null != this.secondaryPropertyView ) {
-                        this.secondaryPropertyView.setModelElement( selectedNode.getElement() ) ;
-                    }
-                } else {
-                    if ( null != this.primaryPropertyView ) {
-                        this.primaryPropertyView.setModelElement( null ) ;
-                    }
-                    ( (CardLayout)( this.primaryPropertyPanel.getLayout() ) ).show( this.primaryPropertyPanel , propertyViewName ) ;
-                    this.primaryPropertyView = this.primaryPropertyViewMap.get( propertyViewName ) ;
-                    this.primaryPropertyView.setModelElement( selectedNode.getElement() ) ;
-                    if ( null != this.secondaryPropertyView ) {
-                        this.secondaryPropertyView.setModelElement( null ) ;
-                    }
-                    if ( this.secondaryPropertyViewMap.containsKey( propertyViewName ) ) {
-                        ( (CardLayout)( this.secondaryPropertyPanel.getLayout() ) ).show( this.secondaryPropertyPanel , propertyViewName ) ;
-                        this.secondaryPropertyView = this.secondaryPropertyViewMap.get( propertyViewName ) ;
-                        this.secondaryPropertyView.setModelElement( selectedNode.getElement() ) ;
-                    } else {
-                        ( (CardLayout)( this.secondaryPropertyPanel.getLayout() ) ).show( this.secondaryPropertyPanel , PROPERTY_VIEW_NAME_NONE ) ;
-                        this.secondaryPropertyView = null ;
-                    }
-                }
-            } else {
-                if ( null != this.primaryPropertyView ) {
-                    this.primaryPropertyView.setModelElement( null ) ;
-                }
-                final ElementPropertyView newPrimaryPropertyView = this.context.getBean( ElementPropertyViewFactory.class ).createPrimaryPropertyView( propertyViewName , this.context ) ;
-                this.primaryPropertyViewMap.put( propertyViewName , newPrimaryPropertyView ) ;
-                this.primaryPropertyPanel.add( newPrimaryPropertyView , propertyViewName ) ;
-                ( (CardLayout)( this.primaryPropertyPanel.getLayout() ) ).show( this.primaryPropertyPanel , propertyViewName ) ;
-                this.primaryPropertyView = newPrimaryPropertyView ;
-                this.primaryPropertyView.setModelElement( selectedNode.getElement() ) ;
-                if ( null != this.secondaryPropertyView ) {
-                    this.secondaryPropertyView.setModelElement( null ) ;
-                }
-                final ElementPropertyView newSecondaryPropertyView = this.context.getBean( ElementPropertyViewFactory.class ).createSecondaryPropertyView( propertyViewName , this.context ) ;
-                if ( null == newSecondaryPropertyView ) {
-                    ( (CardLayout)( this.secondaryPropertyPanel.getLayout() ) ).show( this.secondaryPropertyPanel , PROPERTY_VIEW_NAME_NONE ) ;
-                    this.secondaryPropertyView = null ;
-                } else {
-                    this.secondaryPropertyViewMap.put( propertyViewName , newSecondaryPropertyView ) ;
-                    this.secondaryPropertyPanel.add( newSecondaryPropertyView , propertyViewName ) ;
-                    ( (CardLayout)( this.secondaryPropertyPanel.getLayout() ) ).show( this.secondaryPropertyPanel , propertyViewName ) ;
-                    this.secondaryPropertyView = newSecondaryPropertyView ;
-                    this.secondaryPropertyView.setModelElement( selectedNode.getElement() ) ;
-                }
-            }
-        }
+        // FIXME 未実装
     }
 
     /**
